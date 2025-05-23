@@ -8,7 +8,7 @@ const propertySchema = new mongoose.Schema({
     image: {type: String, default: ""},
     price: {type: Number, require: true},
     location: {type: String, require: true},
-    Agent: {
+    listedBy: {
               type: mongoose.Schema.Types.ObjectId, 
                ref: "User", 
                 require: true}
