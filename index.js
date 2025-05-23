@@ -73,10 +73,10 @@ app.post("/forgotten-password", handleForgottenPassword)
 // MILESTONE 2: BROWSING AND SAVING PROPERTIES
 
  // Get all available Properties
-app.get("/all-properties", handleAvailableProperties)
+app.get("/all-properties", authorization, handleAvailableProperties)
 
 // Get Specific property by ID
-app.get("/properties/:id", handleGetSpecificProperty)
+app.get("/properties/:id", authorization, handleGetSpecificProperty)
 
 // Save a property
 app.post("/save-property", authorization, handleSaveProperty)
