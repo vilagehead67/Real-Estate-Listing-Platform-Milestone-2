@@ -15,11 +15,11 @@ const Property = require("./Models/propertyModel")
 
 const SavedProperty = require("./Models/savedPropertyModel")
 const sendMail = require("./sendMail")
-const { handlePropertyListingsByAgent, handleGetAllUsers, handleUserRegistration, handleUserLogin, handleAvailableProperties, handleGetSpecificProperty, handleSaveProperty, handleUnsaveProperty, handleForgottenPassword, handleResetPassword, handleGetAllSavedProperties } = require('./Controllers/indexController')
-const { authorization, validateRegister } = require('./Middleware/auth')
-const { agentAuthorization } = require('./Middleware/agentOnly')
+
 
 dotenv.config()
+
+const routes = require("./Routes")
 
 
 const app = express()
@@ -44,27 +44,68 @@ app.listen(PORT, () =>{
 // 3. Define Schemas: User, Property
 
  app.get("/", (req, res) =>{
-    console.log("Welcome to Abuja Real Estate server")
+    res.status(200).json("Welcome to Abuja Real Estate server")
  })
 
 //  get all-users
 
-app.get("/all-users", authorization, handleGetAllUsers)
+app.use("/api", routes)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //  Registeration: Agent/User Roles
- app.post("/auth/register", validateRegister, handleUserRegistration)
+
 
 //  User/Agent Login
-app.post("/auth/login", handleUserLogin)
+
 
 // Forgotten password
-app.post("/forgotten-password", handleForgottenPassword)
+
 
 // Reset password
- app.patch("/reset-password", authorization, handleResetPassword)
+ 
 
 // Property listings by agents
- app.post("/properties-agent", authorization, agentAuthorization, handlePropertyListingsByAgent)
+ 
 
 
 
@@ -73,19 +114,25 @@ app.post("/forgotten-password", handleForgottenPassword)
 // MILESTONE 2: BROWSING AND SAVING PROPERTIES
 
  // Get all available Properties
-app.get("/all-properties", handleAvailableProperties)
+
 
 // Get Specific property by ID
-app.get("/properties/:id", handleGetSpecificProperty)
+
 
 // Save a property
-app.post("/save-property", authorization, handleSaveProperty)
+
 
 // Unsave a property
-app.delete("/unsave/:propertyId", authorization, handleUnsaveProperty)
+// app
 
 
 // Get all saved properties for a user
-app.get("/all-saved", authorization, handleGetAllSavedProperties)
+// app
+
+
+
+// MileStone 3
+
+
 
 

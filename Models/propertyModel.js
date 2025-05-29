@@ -8,6 +8,10 @@ const propertySchema = new mongoose.Schema({
     image: {type: String, default: ""},
     price: {type: Number, require: true},
     location: {type: String, require: true},
+    category: {type: String, 
+               enum: ["rent", "sale"],
+               require: true
+    },
     listedBy: {
               type: mongoose.Schema.Types.ObjectId, 
                ref: "User", 

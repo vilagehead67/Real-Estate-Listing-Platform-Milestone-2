@@ -12,21 +12,6 @@ const {validEmail} = require("../sendMail")
 
 
 // MILESTONE ONE
-   const  handleGetAllUsers = async(req, res)=>{
-    try {
-        const allUsers = await findUserService()
-    res.status(200).json({
-        message: "Success",
-        allUsers
-    })
-
-    } catch (error) {
-        res.status(500).json({
-            message: error.message
-        })
-    }
-}
-
 
     const handleUserRegistration = async(req, res) =>{
     try {
@@ -64,10 +49,10 @@ const {validEmail} = require("../sendMail")
                 message: "Username has been taken"
             })
       }
-
-      if (password.length < 8){
+       const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/
+      if (!passwordRegex.test(password)){
         return res.status(400).json({
-            message: "Password must be 8 characters and above."
+            message: "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."
         })
       }
         const hashedPassword = await bcrypt.hash(password, 12)
@@ -101,9 +86,9 @@ const {validEmail} = require("../sendMail")
     const handleUserLogin = async(req, res) =>{
       try {
         
-        const {email, username, password} = req.body
+        const {usernameOrEmail, password} = req.body
         const user = await User.findOne({
-            $or: [{username}, {email}
+            $or: [{username: usernameOrEmail}, {email: usernameOrEmail}
     
             ]
         })
@@ -179,9 +164,14 @@ const {validEmail} = require("../sendMail")
 
 
     const handleResetPassword = async(req, res)=>{
-         const {password} = req.body
+         const {password, confirmPassword} = req.body
          try {
             const user = await User.findOne({email: req.user.email})
+            if (password !== confirmPassword) {
+                 return res.status(400).json({
+                    message: "Password must match confirm password"
+                 })
+            }
             if (!user) {
                 return res.status(404).json({
                     message: "User account does not exist."
@@ -201,151 +191,11 @@ const {validEmail} = require("../sendMail")
          }
     }
 
-    const handlePropertyListingsByAgent = async(req, res) =>{
-    const {title, description, image, price, location, listedBy} = req.body
-
-    try {
-        const user = await User.findById(listedBy);
-
-     const newProperty = new Property({
-    title,
-    description,
-    image,
-    price,
-    location,
-    listedBy
-})
-
-await newProperty.save();
-
-res.status(201).json({
-    message: "Property added successfully",
-    newProperty: {
-        title,
-        description,
-        image,
-        price,
-        location,
-        listedBy
-    }
-})
-
-    } catch (error) {
-        res.status(500).json({
-            message: error.message
-        })
-    }
- }
-
-
-
-//  MILESTONE 2: BROWSING AND SAVING PROPERTIES
-
- const handleAvailableProperties = async(req, res) =>{
-    try {
-        const availableProperties = await Property.find().populate("listedBy", "email username");
-        res.status(200).json({
-            message: "Success",
-            availableProperties
-        }) 
-    } catch (error) {
-        res.status(500).json({error: "Failed to fetch properties"});
-    }
-}
-
-
-   const handleGetSpecificProperty = async(req, res) =>{
-       const {id} = req.params
-       try {
-           const property = await Property.findById(id).populate("listedBy", "username email")
-   
-           if (!property){
-               return res.status(404).json({
-                   message: "Property not found."
-               })
-           }
-           res.status(200).json({
-               message: "Success",
-               property
-           })
-       } catch (error) {
-          res.status(500).json({error: "Failed to fetch property"}) 
-       }
-   }
-   
-    const handleSaveProperty = async(req, res) =>{
-    const { propertyId} = req.body
-    try {
-        // check if property is already saved
-        const alreadySaved = await SavedProperty.findOne({ user: req.user.id, property: propertyId})
-        if (alreadySaved) {
-            return res.status(400).json({
-                message: "Property already saved"
-            })
-        }
-
-        const newSave = new SavedProperty({user: req.user.id, property: propertyId})
-         await newSave.save()
-
-         res.status(201).json({
-            message: "Property saved.",
-            newSave
-         })
-    } catch (error) {
-        res.status(500).json({
-            error: "Failed to save property."
-        })
-    }
-}
-
-     const handleUnsaveProperty = async(req, res) =>{
-          const {propertyId} = req.params
-         try {
-     
-            const deleted = await SavedProperty.findOneAndDelete({user: req.user.id, property: propertyId})
-
-            if (!deleted) {
-                return res.status(404).json({
-                    message: "Saved property not found."
-                })
-            }
-            res.status(200).json({
-             message: "Property unsaved."
-            })
-         } catch (error) {
-             res.status(500).json({
-                 error: "Failed to unsave property"
-             })
-         }
-     }
-        
-    const handleGetAllSavedProperties = async(req, res) =>{
-    try {
-        
-        const saved = await SavedProperty.find({user: req.user.id}).populate("property")
-        
-        res.status(200).json({
-            message: "Saved Properties",
-            saved
-        })
-    } catch (error) {
-          res.status(500).json({
-            error: "Failed to fetch saved properties."
-          })
-    }
-}
 
 
  module.exports = {
-    handlePropertyListingsByAgent,
-    handleGetAllUsers,
     handleUserRegistration,
     handleUserLogin,
-    handleAvailableProperties,
-    handleGetSpecificProperty,
-    handleSaveProperty,
-    handleUnsaveProperty,
-    handleGetAllSavedProperties,
     handleForgottenPassword,
     handleResetPassword
  }

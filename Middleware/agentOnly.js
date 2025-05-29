@@ -1,6 +1,9 @@
 
 
 
+
+// Enforced permissions: only agents can create 
+
 const agentAuthorization = (req, res, next) =>{
     if (req.user.role !== "agent"){
         return res.status(403).json({
