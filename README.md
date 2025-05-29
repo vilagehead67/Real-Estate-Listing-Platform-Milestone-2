@@ -1,4 +1,4 @@
-Updated Milestone 3 
+UPDATED
 
 Milestone 3: Data Fetching & Permissions
 
