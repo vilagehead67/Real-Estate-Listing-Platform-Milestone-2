@@ -44,7 +44,7 @@ app.listen(PORT, () =>{
 // 3. Define Schemas: User, Property
 
  app.get("/", (req, res) =>{
-    res.status(200).json("Welcome to Abuja Real Estate server")
+    res.status(200).json("Welcome to Comfort Zone Real Estate server")
  })
 
 //  get all-users
